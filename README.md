@@ -1,92 +1,48 @@
-# Pirate0 v2.0 -- Video Piracy Detection System
+# Multi-Project Repository
 
-Production-grade video piracy detection using dual-modal fingerprinting (visual CNN + audio MFCC), augmented reference indexing, FAISS vector search, and AI-powered forensic analysis via Google Gemini, orchestrated with LangGraph.
-Main idea is for platforms like Netflix integrate Pirate0 with API and have their Audio-Visual Fingerprints generated. Then platforms like WhatsApp, Telegram etc integrate Pirate0 so that every user's MEDIA UPLOAD can be inspected, flagged for piracy and necessary action is taken.
+This repository contains multiple projects organized by functionality.
 
-## Solution Architecture
+## Overview
+
+Production-grade implementations for content protection and analysis. The main idea is for platforms like Netflix to integrate these systems via API to have their Audio-Visual Fingerprints generated. Then platforms like WhatsApp, Telegram etc can integrate so that every user's MEDIA UPLOAD can be inspected, flagged for piracy and necessary action is taken.
+
+## Projects
+
+### 📁 Anti-Piracy
+Video piracy detection system using dual-modal fingerprinting (visual CNN + audio MFCC), augmented reference indexing, FAISS vector search, and AI-powered forensic analysis via Google Gemini.
+
+**Tech Stack:** FastAPI, PyTorch, ResNet50, FAISS, Librosa, Google Gemini AI
+
+**Documentation:** [Anti-Piracy README](./Anti-Piracy/README.md)
+
+**Key Features:**
+- Dual-modal fingerprinting (visual CNN + audio MFCC)
+- Augmented reference indexing (5 variants per frame)
+- FAISS vector search with cosine similarity
+- AI-powered forensic analysis via Google Gemini
+- Production-ready FastAPI server
+
+---
+
+## Repository Structure
 
 ```
-                          REFERENCE INGESTION
-                          ===================
-
-  Video File ──> FFmpeg (1 FPS) ──> Extracted Frames
-                     |                    |
-                     |              For each frame:
-                     |                    |
-                     |              ┌─────┴──────────────────────────┐
-                     |              │  Augmentation (5 variants)     │
-                     |              │  1. Original                   │
-                     |              │  2. 80% center crop            │
-                     |              │  3. Horizontal flip            │
-                     |              │  4. +5 degree rotation         │
-                     |              │  5. 110% zoom                  │
-                     |              └─────┬──────────────────────────┘
-                     |                    |
-                     |              ResNet50 (ImageNet V2)
-                     |              2048-dim embedding per variant
-                     |                    |
-                     |              L2 normalize + FAISS IndexFlatIP
-                     |              (5 vectors per frame, same metadata)
-                     |
-                     ├──> FFmpeg (16kHz mono WAV)
-                     |         |
-                     |    librosa MFCC (20 coefficients)
-                     |    + delta + delta-delta
-                     |    = 60-dim audio fingerprint
-                     |         |
-                     |    Stored in audio_fingerprints dict
-                     |
-                     └──> Saved to data/index/*.faiss + *.metadata.pkl
-
-
-                          QUERY ANALYSIS
-                          ==============
-
-  Suspect Video ──> FFmpeg (1 FPS) ──> Query Frames
-                        |                   |
-                        |             ResNet50 (single embedding)
-                        |             2048-dim per frame
-                        |                   |
-                        |             FAISS top-1 search per frame
-                        |                   |
-                        |             ┌─────┴─────────────────────────────┐
-                        |             │  ALL matches collected            │
-                        |             │  Strong (>= 0.4): scoring        │
-                        |             │  Weak (< 0.4): evidence only     │
-                        |             └─────┬─────────────────────────────┘
-                        |                   |
-                        |             Group by content_id
-                        |             Find best reference match
-                        |                   |
-                        ├──> Audio MFCC ──> Cosine similarity vs reference
-                        |                   |
-                        |             ┌─────┴─────────────────────────────┐
-                        |             │  Confidence Formula               │
-                        |             │  Visual + Audio + Coverage +      │
-                        |             │  Temporal consistency             │
-                        |             └─────┬─────────────────────────────┘
-                        |                   |
-                        |             Decision: ignore / manual_review /
-                        |                       auto_flag
-                        |                   |
-                        └──> Gemini AI ──> Structured forensic report
-                                           (VERDICT, VISUAL, AUDIO,
-                                            TEMPORAL, RISK ASSESSMENT)
+.
+├── Anti-Piracy/          # Video piracy detection system
+│   ├── app.py           # FastAPI server
+│   ├── core/            # Core detection modules
+│   ├── data/            # FAISS indices and processed data
+│   ├── static/          # Web UI
+│   └── requirements.txt # Python dependencies
+│
+└── (Additional projects will be added here)
 ```
 
-## Core Detection Pipeline
+## Getting Started
 
-### Visual Fingerprinting
-- **Model:** ResNet50 (ImageNet V2 weights, frozen, no classification head)
-- **Embedding:** 2048-dimensional feature vector per frame
-- **Augmented indexing:** Each reference frame produces 5 embedding variants (original, crop, flip, rotate, zoom) to catch transformed pirate copies
-- **Similarity:** Cosine similarity via FAISS IndexFlatIP with L2-normalized vectors
-- **Score range:** Raw [0, 1] -- no rescaling. Unrelated images score 0.10-0.25, identical frames score 0.95+
+Each project has its own setup instructions. Navigate to the respective project folder and follow the README.
 
-### Audio Fingerprinting
-- **Features:** 20 MFCC coefficients + delta + delta-delta = 60-dim embedding
-- **Extraction:** FFmpeg to 16kHz mono WAV, then librosa MFCC analysis
-- **Similarity:** Cosine similarity, clamped to [0, 1]
+## Anti-Piracy Quick Start
 
 ### Confidence Scoring
 
@@ -232,3 +188,13 @@ pirate0-v2/
 ## License
 
 MIT
+
+---
+
+## Contributing
+
+When adding new projects:
+1. Create a dedicated folder at the root level
+2. Include a comprehensive README.md in the project folder
+3. Update this main README with project information
+4. Maintain isolated dependencies per project
