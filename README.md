@@ -11,6 +11,19 @@ Video piracy detection system using dual-modal fingerprinting (visual CNN + audi
 
 **Documentation:** [Anti-Piracy README](./Anti-Piracy/README.md)
 
+### 🎬 SIVE - Multimodal Scene Intent & Visual Planning Engine
+AI-powered Digital Cinematographer that interprets scripts and generates structured visual planning signals for filmmaking.
+
+**Tech Stack:** LangChain, Ollama, Mistral 7B, FLUX.1, ChromaDB, FastAPI, Next.js 14
+
+**Documentation:** [SIVE README](./SIVE/README.md)
+
+**Key Features:**
+- 6-Layer inference engine for scene deconstruction
+- Character consistency with RAG (ChromaDB)
+- Cinematic prompt synthesis for image generation
+- Structured JSON output for 3D engines integration
+
 ---
 
 ## Repository Structure
@@ -24,7 +37,12 @@ Video piracy detection system using dual-modal fingerprinting (visual CNN + audi
 │   ├── static/          # Web UI
 │   └── requirements.txt # Python dependencies
 │
-└── (Additional projects will be added here)
+├── SIVE/                 # Multimodal Scene Intent & Visual Planning Engine
+│   ├── backend/         # FastAPI backend with AI orchestration
+│   ├── frontend/        # Next.js 14 web interface
+│   └── README.md        # Project documentation
+│
+└── .github/              # GitHub workflows and configurations
 ```
 
 ## Getting Started

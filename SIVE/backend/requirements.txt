@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+numpy<2
+langchain
+langchain-community
+langchain-ollama
+langchain-text-splitters
+chromadb
+pypdf
+python-multipart
+onnxruntime
+langchain-chroma
