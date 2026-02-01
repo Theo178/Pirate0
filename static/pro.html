@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pirate0 v2.0 - Professional Video Piracy Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-box {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-box:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .upload-box input[type="file"] {
+            display: none;
+        }
+
+        .upload-box label {
+            cursor: pointer;
+            display: block;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+        }
+
+        .results-section.show {
+            display: grid;
+        }
+
+        /* Left Panel - Score & Reasoning */
+        .left-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .score-display {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .score-value {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+        }
+
+        .decision-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .decision-badge.auto-flag {
+            background: #fee;
+            color: #c53030;
+        }
+
+        .decision-badge.manual-review {
+            background: #fef5e7;
+            color: #d97706;
+        }
+
+        .decision-badge.ignore {
+            background: #e6fffa;
+            color: #047857;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 0.25rem;
+        }
+
+        .reasoning-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+        }
+
+        .reasoning-section h3 {
+            font-size: 1rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .reasoning-content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        /* Right Panel - Evidence Frames */
+        .right-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .evidence-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .evidence-header h2 {
+            font-size: 1.3rem;
+            color: #2d3748;
+        }
+
+        .match-breakdown {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .match-stat {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .match-stat.high {
+            background: #d4edda;
+        }
+
+        .match-stat.medium {
+            background: #fff3cd;
+        }
+
+        .match-stat.low {
+            background: #f8d7da;
+        }
+
+        .match-stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .match-stat-label {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .frames-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .frame-comparison {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            background: #f9fafb;
+        }
+
+        .frame-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .frame-info {
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        .similarity-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .similarity-badge.high {
+            background: #28a745;
+            color: white;
+        }
+
+        .similarity-badge.medium {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .similarity-badge.low {
+            background: #dc3545;
+            color: white;
+        }
+
+        .frame-images {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .frame-box {
+            text-align: center;
+        }
+
+        .frame-box img {
+            width: 100%;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .frame-box-label {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 0.5rem;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        .spinner.show {
+            display: block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+        }
+
+        .status-message.processing {
+            background: #e6f7ff;
+            color: #0050b3;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏴‍☠️ Pirate0 v2.0</h1>
+        <p>AI-Powered Video Piracy Detection System</p>
+    </div>
+
+    <div class="container">
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <h2 style="margin-bottom: 1.5rem;">Video Analysis</h2>
+            
+            <div class="upload-grid">
+                <!-- Reference Video -->
+                <div>
+                    <h3 style="margin-bottom: 1rem; color: #4a5568;">1. Add Reference Video</h3>
+                    <div class="upload-box" onclick="document.getElementById('ref-video').click()">
+                        <div class="upload-icon">📁</div>
+                        <label>
+                            <strong>Upload Reference Video</strong>
+                            <p style="font-size: 0.85rem; color: #718096; margin-top: 0.5rem;">Click to select original content</p>
+                            <input type="file" id="ref-video" accept="video/*">
+                        </label>
+                    </div>
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label>Content ID</label>
+                        <input type="text" id="content-id" placeholder="e.g., movie_001">
+                    </div>
+                    <button onclick="uploadReference()">Add to Database</button>
+                </div>
+
+                <!-- Query Video -->
+                <div>
+                    <h3 style="margin-bottom: 1rem; color: #4a5568;">2. Check for Piracy</h3>
+                    <div class="upload-box" onclick="document.getElementById('query-video').click()">
+                        <div class="upload-icon">🔍</div>
+                        <label>
+                            <strong>Upload Video to Check</strong>
+                            <p style="font-size: 0.85rem; color: #718096; margin-top: 0.5rem;">Upload suspicious content</p>
+                            <input type="file" id="query-video" accept="video/*">
+                        </label>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <button onclick="checkPiracy()" style="width: 100%;">Analyze Video</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="upload-status"></div>
+            <div class="spinner" id="spinner"></div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="results-section">
+            <!-- Left Panel: Score & Reasoning -->
+            <div class="left-panel">
+                <div class="score-display">
+                    <div class="score-value" id="confidence-score">0%</div>
+                    <div class="score-label">Confidence Score</div>
+                    <div class="decision-badge" id="decision-badge">Analyzing...</div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-value" id="visual-conf">0%</div>
+                        <div class="metric-label">Visual</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="audio-sim">N/A</div>
+                        <div class="metric-label">Audio</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="coverage">0%</div>
+                        <div class="metric-label">Coverage</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="temporal">0%</div>
+                        <div class="metric-label">Temporal</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; padding: 1rem; background: #f7fafc; border-radius: 8px;">
+                    <strong>Matched Content:</strong>
+                    <div id="matched-content" style="color: #667eea; margin-top: 0.5rem;">-</div>
+                </div>
+
+                <div class="reasoning-section" id="reasoning-section">
+                    <h3>🤖 AI Analysis</h3>
+                    <div class="reasoning-content" id="ai-reasoning">
+                        Analyzing evidence...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Frame Evidence -->
+            <div class="right-panel">
+                <div class="evidence-header">
+                    <h2>Frame Evidence</h2>
+                    <div id="pattern-info" style="font-size: 0.9rem; color: #718096;"></div>
+                </div>
+
+                <div class="match-breakdown" id="match-breakdown">
+                    <!-- Will be populated dynamically -->
+                </div>
+
+                <div class="frames-grid" id="frames-grid">
+                    <!-- Frame comparisons will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+
+        async function uploadReference() {
+            const videoFile = document.getElementById('ref-video').files[0];
+            const contentId = document.getElementById('content-id').value;
+
+            if (!videoFile || !contentId) {
+                showStatus('Please select a video and enter content ID', 'error');
+                return;
+            }
+
+            showSpinner(true);
+            showStatus('Uploading and processing reference video...', 'processing');
+
+            const formData = new FormData();
+            formData.append('video', videoFile);
+            formData.append('content_id', contentId);
+
+            try {
+                const response = await fetch(`${API_BASE}/reference`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus(`✓ Reference video "${contentId}" added successfully! (${data.num_frames} frames, Audio: ${data.has_audio_fingerprint ? '✓' : '✗'})`, 'success');
+                    document.getElementById('ref-video').value = '';
+                    document.getElementById('content-id').value = '';
+                } else {
+                    showStatus(`Error: ${data.detail}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        async function checkPiracy() {
+            const videoFile = document.getElementById('query-video').files[0];
+
+            if (!videoFile) {
+                showStatus('Please select a video to check', 'error');
+                return;
+            }
+
+            showSpinner(true);
+            showStatus('Analyzing video for piracy...', 'processing');
+            document.getElementById('results-section').classList.remove('show');
+
+            const formData = new FormData();
+            formData.append('video', videoFile);
+
+            try {
+                const response = await fetch(`${API_BASE}/query`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResults(data);
+                    showStatus('Analysis complete!', 'success');
+                } else {
+                    showStatus(`Error: ${data.detail}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+            } finally {
+                showSpinner(false);
+            }
+        }
+
+        function displayResults(data) {
+            const detection = data.detection;
+            const evidence = data.evidence || {};
+            const matched = data.matched_content;
+
+            // Show results section
+            document.getElementById('results-section').classList.add('show');
+
+            // Score
+            document.getElementById('confidence-score').textContent = 
+                `${(detection.confidence_score * 100).toFixed(1)}%`;
+
+            // Decision badge
+            const badge = document.getElementById('decision-badge');
+            badge.className = 'decision-badge ' + detection.decision.replace('_', '-');
+            badge.textContent = {
+                'auto_flag': '🚨 Auto-Flagged',
+                'manual_review': '⚠ Manual Review',
+                'ignore': '✓ No Match'
+            }[detection.decision];
+
+            // Metrics
+            document.getElementById('visual-conf').textContent = 
+                `${(detection.visual_confidence * 100).toFixed(1)}%`;
+            document.getElementById('audio-sim').textContent = 
+                detection.audio_similarity ? `${(detection.audio_similarity * 100).toFixed(1)}%` : 'N/A';
+            document.getElementById('coverage').textContent = 
+                `${(detection.coverage_ratio * 100).toFixed(1)}%`;
+            document.getElementById('temporal').textContent = 
+                `${(detection.temporal_consistency * 100).toFixed(1)}%`;
+
+            // Matched content
+            document.getElementById('matched-content').textContent = matched.content_id || 'None';
+
+            // AI Reasoning
+            document.getElementById('ai-reasoning').textContent = 
+                data.ai_reasoning || 'No AI analysis available';
+
+            // Pattern info
+            document.getElementById('pattern-info').textContent = 
+                `Pattern: ${evidence.temporal_pattern || 'N/A'} | Audio: ${evidence.audio_match_quality || 'N/A'}`;
+
+            // Match breakdown
+            const breakdown = evidence.match_breakdown || {};
+            document.getElementById('match-breakdown').innerHTML = `
+                <div class="match-stat high">
+                    <div class="match-stat-value">${breakdown.high_similarity || 0}</div>
+                    <div class="match-stat-label">High (>90%)</div>
+                </div>
+                <div class="match-stat medium">
+                    <div class="match-stat-value">${breakdown.medium_similarity || 0}</div>
+                    <div class="match-stat-label">Medium (70-90%)</div>
+                </div>
+                <div class="match-stat low">
+                    <div class="match-stat-value">${breakdown.low_similarity || 0}</div>
+                    <div class="match-stat-label">Low (<70%)</div>
+                </div>
+            `;
+
+            // Frame comparisons
+            const framesGrid = document.getElementById('frames-grid');
+            framesGrid.innerHTML = '';
+
+            const frames = evidence.matched_frames || [];
+            const perFrameAnalysis = data.per_frame_analysis || [];
+            
+            frames.slice(0, 5).forEach((frame, idx) => {
+                const qualityClass = frame.match_quality;
+                const frameAnalysis = perFrameAnalysis.find(a => a.frame === frame.query_frame);
+                
+                const frameEl = document.createElement('div');
+                frameEl.className = 'frame-comparison';
+                frameEl.innerHTML = `
+                    <div class="frame-header">
+                        <div class="frame-info">
+                            <strong>Frame ${idx + 1}</strong>
+                            <span style="color: #718096;"> • ${frame.reference_timestamp.toFixed(1)}s</span>
+                        </div>
+                        <div class="similarity-badge ${qualityClass}">
+                            ${(frame.similarity * 100).toFixed(1)}% match
+                        </div>
+                    </div>
+                    ${frameAnalysis ? `
+                        <div style="padding: 0.75rem; background: #f7fafc; border-left: 3px solid #667eea; border-radius: 4px; margin-bottom: 1rem; font-size: 0.9rem; color: #4a5568;">
+                            <strong style="color: #667eea;">🤖 AI Analysis:</strong> ${frameAnalysis.analysis}
+                        </div>
+                    ` : ''}
+                    <div class="frame-images">
+                        <div class="frame-box">
+                            <img src="/frames/${frame.query_frame_path.replace('data/frames/', '')}" alt="Query frame">
+                            <div class="frame-box-label">Query Frame</div>
+                        </div>
+                        <div class="frame-box">
+                            <img src="/frames/${frame.matched_content_id}/${frame.query_frame}" alt="Reference frame" 
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'150\'%3E%3Crect fill=\'%23eee\' width=\'200\' height=\'150\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3ENo Image%3C/text%3E%3C/svg%3E'">
+                            <div class="frame-box-label">Reference Frame</div>
+                        </div>
+                    </div>
+                `;
+                framesGrid.appendChild(frameEl);
+            });
+        }
+
+        function showSpinner(show) {
+            document.getElementById('spinner').classList.toggle('show', show);
+        }
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('upload-status');
+            statusEl.className = `status-message ${type}`;
+            statusEl.textContent = message;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusEl.textContent = '';
+                    statusEl.className = '';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
