@@ -1,6 +1,7 @@
 # Pirate0 v2.0 -- Video Piracy Detection System
 
 Production-grade video piracy detection using dual-modal fingerprinting (visual CNN + audio MFCC), augmented reference indexing, FAISS vector search, and AI-powered forensic analysis via Google Gemini.
+Main idea is for platforms like Netflix integrate Pirate0 with API and have their Audio-Visual Fingerprints generated. Then platforms like WhatsApp, Telegram etc integrate Pirate0 so that every user's MEDIA UPLOAD can be inspected, flagged for piracy and necessary action is taken.
 
 ## Solution Architecture
 
