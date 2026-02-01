@@ -159,7 +159,7 @@ copy env.example .env
 ```bash
 python app.py
 # API:  http://localhost:8000
-# UI:   http://localhost:8000/static/
+# UI:   http://localhost:8000/static/index.html
 ```
 
 ### API Endpoints
